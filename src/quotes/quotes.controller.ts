@@ -10,6 +10,10 @@ import {
 import { QuotesService } from './quotes.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
+import {
+  QuoteEntity,
+  QuoteWithAuthorAndCategoryEntity,
+} from './entities/quote.entity';
 
 @Controller('quotes')
 export class QuotesController {
@@ -24,24 +28,32 @@ export class QuotesController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<QuoteEntity[]> {
     return this.quotesService.findAll();
   }
+
+  // @Get('random')
+  // findrandom(): Promise<QuoteEntity> {
+  //   return this.quotesService.findRandom()
+  // }
 
   // the @Param decorator is used to capture request parameters and use them in our method
   // in this one, we are recieving a string but turning it to a number using type coercion
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<QuoteWithAuthorAndCategoryEntity> {
     return this.quotesService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuoteDto: UpdateQuoteDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateQuoteDto: UpdateQuoteDto,
+  ): Promise<QuoteEntity> {
     return this.quotesService.update(+id, updateQuoteDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.quotesService.remove(+id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.quotesService.remove(+id);
   }
 }
